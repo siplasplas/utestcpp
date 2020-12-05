@@ -51,7 +51,8 @@ namespace Tdd {
 
     class Session {
     public:
-        size_t assertionsCount = 0;
+        size_t assertionsOK = 0;
+        size_t failedAssertions = 0;
         std::vector<TestCase> cases;
 
         Session(){};
@@ -111,9 +112,9 @@ namespace Tdd {
                     cc.reset();
                 }
             }
-            int w1 = max(w(cases.size()),w(assertionsCount));
-            int w2 = max(w(cases.size()-failedCases),w(assertionsCount-failedCases));
-            int w3 = w(failedCases);
+            int w1 = max(w(cases.size()),w(assertionsOK+failedAssertions));
+            int w2 = max(w(cases.size()-failedCases),w(assertionsOK));
+            int w3 = max(w(failedCases),w(failedAssertions));
             std::cout << std::endl;
             if (failedCases>0)
                 cc.setColour(FORE_RED);
@@ -135,16 +136,16 @@ namespace Tdd {
             cc.reset();
 
             std::cout << "assertions: ";
-            std::cout << pad(assertionsCount,w1);
+            std::cout << pad(assertionsOK,w1);
             std::cout << " | ";
-            if (assertionsCount-failedCases>0)
+            if (assertionsOK>0)
                 cc.setColour(FORE_GREEN);
-            std::cout << pad(assertionsCount-failedCases,2) << " passed";
+            std::cout << pad(assertionsOK,2) << " passed";
             cc.reset();
             std::cout << " | ";
-            if (failedCases>0)
+            if (failedAssertions>0)
                 cc.setColour(FORE_RED);
-            std::cout << pad(failedCases,w3) << " failed" << std::endl;;
+            std::cout << pad(failedAssertions,w3) << " failed" << std::endl;;
             cc.reset();
 
             return failedCases>0?2:0;
@@ -161,9 +162,11 @@ namespace Tdd {
 
     inline void AssertBoolStr(const std::string & first, const std::string & second, bool cond, const std::string &message, const std::string filename, size_t line) {
         if (cond)
-            session.assertionsCount++;
-        else
-            throw TddException(first, message, second,filename,line);
+            session.assertionsOK++;
+        else {
+            session.failedAssertions++;
+            throw TddException(first, message, second, filename, line);
+        }
     }
 
     inline void AssertBoolInt(const long int &first, const long int & second, bool cond, const std::string &message, const std::string filename, size_t line) {
