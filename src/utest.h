@@ -80,7 +80,6 @@ namespace Tdd {
             int failedCases = 0;
             ConColors cc;
             for (auto tc: cases) {
-                assertionsCount=0;
                 try {
                     std::cout << std::endl;
                     std::cout << "-------------------------------------------------------------------------------" << std::endl;
