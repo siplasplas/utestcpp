@@ -223,27 +223,27 @@ namespace Tdd {
 
     template <typename T>
     void AssertNeq(T first, T second, const std::string filename, size_t line) {
-        AssertBool(first, second, first==second, "!=", filename, line);
+        AssertBool(first, second, first!=second, "!=", filename, line);
     }
 
     template <typename T>
     void AssertLt(T first, T second, const std::string filename, size_t line) {
-        AssertBool(first, second, first==second, "<", filename, line);
+        AssertBool(first, second, first<second, "<", filename, line);
     }
 
     template <typename T>
     void AssertLe(T first, T second, const std::string filename, size_t line) {
-        AssertBool(first, second, first==second, "<=", filename, line);
+        AssertBool(first, second, first<=second, "<=", filename, line);
     }
 
     template <typename T>
     void AssertGt(T first, T second, const std::string filename, size_t line) {
-        AssertBool(first, second, first==second, ">", filename, line);
+        AssertBool(first, second, first>second, ">", filename, line);
     }
 
     template <typename T>
     void AssertGe(T first, T second, const std::string filename, size_t line) {
-        AssertBool(first, second, first==second, ">=", filename, line);
+        AssertBool(first, second, first>=second, ">=", filename, line);
     }
 } // end namespace Catch
 
