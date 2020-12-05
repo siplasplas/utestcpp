@@ -2,6 +2,12 @@
 #include "ConColors.h"
 #include <vector>
 
+namespace std {
+    inline string to_string(string s){
+        return s;
+    }
+}
+
 namespace utest {
 
     struct UtestException: public std::exception {
