@@ -2,15 +2,15 @@
 #include "ConColors.h"
 #include <vector>
 
-namespace Tdd {
+namespace utest {
 
-    struct TddException: public std::exception {
+    struct UtestException: public std::exception {
         std::string first;
         std::string message;
         std::string second;
         std::string filename;
         size_t line;
-        TddException(const std::string first,
+        UtestException(const std::string first,
                               const std::string message,
                               const std::string second,
                               const std::string filename,
@@ -19,19 +19,19 @@ namespace Tdd {
                 message(std::move(message)),filename(std::move(filename)),
                 line(line) { }
 
-        virtual ~TddException() throw (){}
+        virtual ~UtestException() throw (){}
         virtual std::string whatstr() const noexcept {
             return first+" " + message + " " + second;
         }
     };
 
-    class TddError: public std::exception {
+    class UtestError: public std::exception {
         std::string message;
     public:
-        explicit TddError(std::string message):
+        explicit UtestError(std::string message):
                 message(std::move(message)) { }
 
-        virtual ~TddError() throw (){}
+        virtual ~UtestError() throw (){}
         virtual const char* what() const noexcept {
             return (message).c_str();
         }
@@ -75,7 +75,7 @@ namespace Tdd {
         }
         int run( int argc, char* const argv[] ) {
             std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
-            std::cout << argv[0] << " is a Tdd v1 host application." << std::endl;
+            std::cout << argv[0] << " is a UTest v1 host application." << std::endl;
             std::cout << "Run with -? for options" << std::endl;
 
             int failedCases = 0;
@@ -90,7 +90,7 @@ namespace Tdd {
                     std::cout << "..............................................................................." << std::endl;
                     tc.func();
                 }
-                catch(TddException &e) {
+                catch(UtestException &e) {
                     failedCases++;
                     std::cout << std::endl;
                     std::cout << e.filename << ":" << e.line;
@@ -102,7 +102,7 @@ namespace Tdd {
                     std::cout << e.whatstr() << std::endl;
                     cc.reset();
                 }
-                catch(TddError &e) {
+                catch(UtestError &e) {
                     throw e;
                 }
                 catch (...) {
@@ -160,62 +160,16 @@ namespace Tdd {
         }
     };
 
-    inline void AssertBoolStr(const std::string & first, const std::string & second, bool cond, const std::string &message, const std::string filename, size_t line) {
+    template<typename T>
+    void AssertBool(T first, T second, bool cond, const std::string &message, const std::string filename, size_t line)
+    {
+        std::string firstStr = std::to_string(first);
+        std::string secondStr = std::to_string(second);
         if (cond)
             session.assertionsOK++;
         else {
             session.failedAssertions++;
-            throw TddException(first, message, second, filename, line);
-        }
-    }
-
-    inline void AssertBoolInt(const long int &first, const long int & second, bool cond, const std::string &message, const std::string filename, size_t line) {
-        AssertBoolStr(std::to_string(first), std::to_string(second), cond, message, filename, line);
-    }
-
-    template<typename T>
-    void AssertBool(T first, T second, bool cond, const std::string &message, const std::string filename, size_t line)
-    {
-        if constexpr (std::is_same_v<T, std::string>) {
-            AssertBoolStr(first,second,cond,message, filename, line);
-        }
-        else if constexpr (std::is_same_v<T, const char*>) {
-            AssertBoolStr(first,second,cond,message, filename, line);
-        }
-        else if constexpr (std::is_same_v<T, uint8_t>)
-        {
-            AssertBoolInt(first,second,cond,message, filename, line);
-        }
-        else if constexpr (std::is_same_v<T, int8_t>)
-        {
-            AssertBoolInt(first,second,cond,message, filename, line);
-        }
-        else if constexpr (std::is_same_v<T, uint16_t>)
-        {
-            AssertBoolInt(first,second,cond,message, filename, line);
-        }
-        else if constexpr (std::is_same_v<T, int16_t>)
-        {
-            AssertBoolInt(first,second,cond,message, filename, line);
-        }
-        else if constexpr (std::is_same_v<T, uint32_t>)
-        {
-            AssertBoolInt(first,second,cond,message, filename, line);
-        }
-        else if constexpr (std::is_same_v<T, int32_t>)
-        {
-            AssertBoolInt(first,second,cond,message, filename, line);
-        }
-        else if constexpr (std::is_same_v<T, uint64_t>)
-        {
-            AssertBoolInt(first,second,cond,message, filename, line);
-        }
-        else if constexpr (std::is_same_v<T, int64_t>)
-        {
-            AssertBoolInt(first,second,cond,message, filename, line);
-        }
-        else {
-            throw TddError("Not handled Assert type");
+            throw UtestException(firstStr, message, secondStr, filename, line);
         }
     }
 
