@@ -15,11 +15,28 @@
 
 #define DEFAULT_MAIN int main( int argc, char* const argv[] ){ return utest::session.run( argc, argv ); }
 
-#define ASSERT_EQ(first, second) utest::AssertEq(first,second,__FILE__, __LINE__)
-#define ASSERT_NEQ(first, second) utest::AssertNeq(first,second,__FILE__, __LINE__)
-#define ASSERT_LT(first, second) utest::AssertLt(first,second,__FILE__, __LINE__)
-#define ASSERT_LE(first, second) utest::AssertLe(first,second,__FILE__, __LINE__)
-#define ASSERT_GT(first, second) utest::AssertGt(first,second,__FILE__, __LINE__)
-#define ASSERT_GE(first, second) utest::AssertGe(first,second,__FILE__, __LINE__)
+#define ASSERT_EQ(first, second) utest::TestEq(first,second,__FILE__, __LINE__, true)
+#define ASSERT_NE(first, second) utest::TestNe(first,second,__FILE__, __LINE__, true)
+#define ASSERT_LT(first, second) utest::TestLt(first,second,__FILE__, __LINE__, true)
+#define ASSERT_LE(first, second) utest::TestLe(first,second,__FILE__, __LINE__, true)
+#define ASSERT_GT(first, second) utest::TestGt(first,second,__FILE__, __LINE__, true)
+#define ASSERT_GE(first, second) utest::TestGe(first,second,__FILE__, __LINE__, true)
 
-#define ASSERT_BOOL(first, second, cond, message) utest::AssertBool(first, second, cond, message ,__FILE__, __LINE__)
+#define EXPECTM_EQ(first, second, message) utest::TestEq(first,second,message, __FILE__, __LINE__, false)
+#define EXPECTM_NE(first, second, message) utest::TestNe(first,second,message, __FILE__, __LINE__, false)
+#define EXPECTM_LT(first, second, message) utest::TestLt(first,second,message, __FILE__, __LINE__, false)
+#define EXPECTM_LE(first, second, message) utest::TestLe(first,second,message, __FILE__, __LINE__, false)
+#define EXPECTM_GT(first, second, message) utest::TestGt(first,second,message, __FILE__, __LINE__, false)
+#define EXPECTM_GE(first, second, message) utest::TestGe(first,second,message, __FILE__, __LINE__, false)
+
+#define EXPECT_EQ(first, second) EXPECTM_EQ(first, second, "")
+#define EXPECT_NE(first, second) EXPECTM_NE(first, second, "")
+#define EXPECT_LT(first, second) EXPECTM_LT(first, second, "")
+#define EXPECT_LE(first, second) EXPECTM_LE(first, second, "")
+#define EXPECT_GT(first, second) EXPECTM_GT(first, second, "")
+#define EXPECT_GE(first, second) EXPECTM_GE(first, second, "")
+
+#define ASSERT_BOOL(first, second, cond, msg1, msg2) utest::TestBool(first, second, cond, msg1, msg2 ,__FILE__, __LINE__, true)
+#define EXPECT_BOOL(first, second, cond, msg1, msg2) utest::TestBool(first, second, cond, msg1, msg2 ,__FILE__, __LINE__. false)
+
+#define SCOPED_TRACE(message) utest::ScopedTrace(message ,__FILE__, __LINE__)

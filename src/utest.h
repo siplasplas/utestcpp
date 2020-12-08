@@ -12,22 +12,24 @@ namespace utest {
 
     struct UtestException: public std::exception {
         std::string first;
-        std::string message;
+        std::string msg1;
+        std::string msg2;
         std::string second;
         std::string filename;
         size_t line;
         UtestException(const std::string first,
-                              const std::string message,
+                              const std::string msg1,
+                              const std::string msg2,
                               const std::string second,
                               const std::string filename,
                               size_t line):
                 first(std::move(first)),second(std::move(second)),
-                message(std::move(message)),filename(std::move(filename)),
+                msg1(std::move(msg1)),msg2(std::move(msg2)),filename(std::move(filename)),
                 line(line) { }
 
         virtual ~UtestException() throw (){}
         virtual std::string whatstr() const noexcept {
-            return first+" " + message + " " + second;
+            return first+" " + msg1 + " " + second + " " + msg2;
         }
     };
 
@@ -167,7 +169,7 @@ namespace utest {
     };
 
     template<typename T>
-    void AssertBool(T first, T second, bool cond, const std::string &message, const std::string filename, size_t line)
+    void TestBool(T first, T second, bool cond, const std::string &msg1, const std::string &msg2, const std::string filename, size_t line, bool fatal)
     {
         std::string firstStr = std::to_string(first);
         std::string secondStr = std::to_string(second);
@@ -175,38 +177,45 @@ namespace utest {
             session.assertionsOK++;
         else {
             session.failedAssertions++;
-            throw UtestException(firstStr, message, secondStr, filename, line);
+            if (fatal)
+                throw UtestException(firstStr, msg1, msg2, secondStr, filename, line);
         }
     }
 
     template <typename T>
-    void AssertEq(const T& first, const T& second, const std::string filename, size_t line) {
-        AssertBool(first, second, first==second, "==", filename, line);
+    void TestEq(const T& first, const T& second, const std::string &msg2, const std::string filename, size_t line, bool fatal) {
+        TestBool(first, second, first==second, "==", msg2, filename, line, fatal);
     }
 
     template <typename T>
-    void AssertNeq(T first, T second, const std::string filename, size_t line) {
-        AssertBool(first, second, first!=second, "!=", filename, line);
+    void TestNe(T first, T second, const std::string &msg2, const std::string filename, size_t line, bool fatal) {
+        TestBool(first, second, first!=second, "!=", msg2, filename, line, fatal);
     }
 
     template <typename T>
-    void AssertLt(T first, T second, const std::string filename, size_t line) {
-        AssertBool(first, second, first<second, "<", filename, line);
+    void TestLt(T first, T second, const std::string &msg2, const std::string filename, size_t line, bool fatal) {
+        TestBool(first, second, first<second, "<", msg2, filename, line, fatal);
     }
 
     template <typename T>
-    void AssertLe(T first, T second, const std::string filename, size_t line) {
-        AssertBool(first, second, first<=second, "<=", filename, line);
+    void TestLe(T first, T second, const std::string &msg2, const std::string filename, size_t line, bool fatal) {
+        TestBool(first, second, first<=second, "<=", msg2, filename, line, fatal);
     }
 
     template <typename T>
-    void AssertGt(T first, T second, const std::string filename, size_t line) {
-        AssertBool(first, second, first>second, ">", filename, line);
+    void TestGt(T first, T second, const std::string &msg2, const std::string filename, size_t line, bool fatal) {
+        TestBool(first, second, first>second, ">", msg2, filename, line, fatal);
     }
 
     template <typename T>
-    void AssertGe(T first, T second, const std::string filename, size_t line) {
-        AssertBool(first, second, first>=second, ">=", filename, line);
+    void TestGe(T first, T second, const std::string &msg2, const std::string filename, size_t line, bool fatal) {
+        TestBool(first, second, first>=second, ">=", msg2, filename, line, fatal);
+    }
+
+    void ScopedTrace(const std::string &message, const std::string filename, size_t line) {
+        std::cout << filename << ":" << line;
+        std::cout << std::endl;
+        std::cout << message << std::endl;
     }
 } // end namespace Catch
 
