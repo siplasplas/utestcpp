@@ -212,7 +212,7 @@ namespace utest {
         TestBool(first, second, first>=second, ">=", msg2, filename, line, fatal);
     }
 
-    void ScopedTrace(const std::string &message, const std::string filename, size_t line) {
+    inline void ScopedTrace(const std::string &message, const std::string filename, size_t line) {
         std::cout << filename << ":" << line;
         std::cout << std::endl;
         std::cout << message << std::endl;
