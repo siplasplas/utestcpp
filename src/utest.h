@@ -7,8 +7,8 @@ namespace std {
         return s;
     }
 
-	template <template <typename T1> typename T, typename T1>
-	inline string to_string(T<T1> &v) {
+	template <typename T1>
+	inline string to_stringVec(const std::vector<T1> &v) {
 		  string res = "{";
 		  for (int i=0; i<v.size(); i++) {
 				if (i>0) res+=",";
@@ -180,14 +180,18 @@ namespace utest {
     };
 
     template <template <typename T1> typename T, typename T1>
-    void TestBool(T<T1> first, T<T1> second, bool cond, const std::string &msg1, const std::string &msg2, const std::string filename, size_t line, bool fatal)
+    void TestBool(const T<T1> &first, const T<T1> &second, bool cond, const std::string &msg1, const std::string &msg2, const std::string filename, size_t line, bool fatal)
     {
 		  std::string firstStr;
 		  std::string secondStr;
 
-        firstStr = std::to_string<T,T1>(first);
-		  secondStr = std::to_string<T,T1>(second);
-
+		  if constexpr (std::is_same_v<T<T1>, std::vector<T1>>) {
+			   firstStr = std::to_stringVec<T1>(first);
+            secondStr = std::to_stringVec<T1>(second);
+		  } else {
+				firstStr = std::to_string(first);
+				secondStr = std::to_string(second);
+		  }
         if (cond)
             session.assertionsOK++;
         else {
@@ -197,14 +201,15 @@ namespace utest {
         }
     }
 
-    template<typename T>
+    template <typename T,
+				  typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type>
     void TestBool(T first, T second, bool cond, const std::string &msg1, const std::string &msg2, const std::string filename, size_t line, bool fatal)
     {
 		  std::string firstStr;
 		  std::string secondStr;
 
-		  firstStr = std::to_string(first);
-		  secondStr = std::to_string(second);
+        firstStr = std::to_string(first);
+        secondStr = std::to_string(second);
 
         if (cond)
             session.assertionsOK++;
@@ -214,6 +219,7 @@ namespace utest {
                 throw UtestException(firstStr, msg1, msg2, secondStr, filename, line);
         }
     }
+
 
     template <typename T>
     void TestEq(const T& first, const T& second, const std::string &msg2, const std::string filename, size_t line, bool fatal) {
