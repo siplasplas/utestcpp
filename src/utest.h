@@ -6,6 +6,17 @@ namespace std {
     inline string to_string(string s){
         return s;
     }
+
+	template <template <typename T1> typename T, typename T1>
+	inline string to_string(T<T1> &v) {
+		  string res = "{";
+		  for (int i=0; i<v.size(); i++) {
+				if (i>0) res+=",";
+				res+=to_string(v[i]);
+		  }
+		  res += "}";
+        return res;
+    }
 }
 
 namespace utest {
@@ -168,11 +179,33 @@ namespace utest {
         }
     };
 
+    template <template <typename T1> typename T, typename T1>
+    void TestBool(T<T1> first, T<T1> second, bool cond, const std::string &msg1, const std::string &msg2, const std::string filename, size_t line, bool fatal)
+    {
+		  std::string firstStr;
+		  std::string secondStr;
+
+        firstStr = std::to_string<T,T1>(first);
+		  secondStr = std::to_string<T,T1>(second);
+
+        if (cond)
+            session.assertionsOK++;
+        else {
+            session.failedAssertions++;
+            if (fatal)
+                throw UtestException(firstStr, msg1, msg2, secondStr, filename, line);
+        }
+    }
+
     template<typename T>
     void TestBool(T first, T second, bool cond, const std::string &msg1, const std::string &msg2, const std::string filename, size_t line, bool fatal)
     {
-        std::string firstStr = std::to_string(first);
-        std::string secondStr = std::to_string(second);
+		  std::string firstStr;
+		  std::string secondStr;
+
+		  firstStr = std::to_string(first);
+		  secondStr = std::to_string(second);
+
         if (cond)
             session.assertionsOK++;
         else {
