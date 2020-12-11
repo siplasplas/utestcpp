@@ -1,6 +1,7 @@
 #pragma once
 #include "ConColors.h"
 #include <vector>
+#include <chrono>
 
 namespace std {
     inline string to_string(string s){
@@ -95,19 +96,23 @@ namespace utest {
         int run( int argc, char* const argv[] ) {
             std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
             std::cout << argv[0] << " is a UTest v1 host application." << std::endl;
-            std::cout << "Run with -? for options" << std::endl;
+            //std::cout << "Run with ? for options" << std::endl;
 
             int failedCases = 0;
             ConColors cc;
+            auto start = std::chrono::high_resolution_clock::now();
             for (auto tc: cases) {
                 try {
-                    std::cout << std::endl;
-                    std::cout << "-------------------------------------------------------------------------------" << std::endl;
-                    std::cout << tc.name << std::endl;
-                    std::cout << "-------------------------------------------------------------------------------" << std::endl;
-                    std::cout << tc.filename << ":" << tc.line << std::endl;
-                    std::cout << "..............................................................................." << std::endl;
+                    std::cout << tc.name << " in ";
+                    std::cout << tc.filename << ":" << tc.line << std::flush;
+                    int failedCasesBefore = failedCases;
                     tc.func();
+                    if (failedCases==failedCasesBefore) {
+                        cc.setColour(FORE_GREEN);
+                        std::cout << " PASSED";
+                        cc.reset();
+                        std::cout << std::endl;
+                    }
                 }
                 catch(UtestException &e) {
                     failedCases++;
@@ -131,6 +136,7 @@ namespace utest {
                     cc.reset();
                 }
             }
+            auto end = std::chrono::high_resolution_clock::now();
             int w1 = max(w(cases.size()),w(assertionsOK+failedAssertions));
             int w2 = max(w(cases.size()-failedCases),w(assertionsOK));
             int w3 = max(w(failedCases),w(failedAssertions));
@@ -166,7 +172,8 @@ namespace utest {
                 cc.setColour(FORE_RED);
             std::cout << pad(failedAssertions,w3) << " failed" << std::endl;;
             cc.reset();
-
+            std::chrono::duration<double> elapsed_seconds = end - start;
+            std::cout << "test time=" << elapsed_seconds.count()*1000 << "ms" << std::endl;
             return failedCases>0?2:0;
         }
     };
