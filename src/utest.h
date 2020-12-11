@@ -103,7 +103,7 @@ namespace utest {
             auto start = std::chrono::high_resolution_clock::now();
             for (auto tc: cases) {
                 try {
-                    std::cout << tc.name << " in ";
+                    std::cout << tc.name << " ";
                     std::cout << tc.filename << ":" << tc.line << std::flush;
                     int failedCasesBefore = failedCases;
                     tc.func();
